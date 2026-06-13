@@ -16,9 +16,8 @@ export const useCanvas = (roomId: string, role: string) => {
       if (!ctx) return;
 
       const { x, y, type, color } = data;
-      const rect = canvas.getBoundingClientRect();
-      const actualX = x * rect.width;
-      const actualY = y * rect.height;
+      const actualX = x * canvas.width;
+      const actualY = y * canvas.height;
 
       ctx.strokeStyle = color;
       ctx.lineWidth = 3;
@@ -79,8 +78,8 @@ export const useCanvas = (roomId: string, role: string) => {
     ctx.lineWidth = 3;
     ctx.lineCap = 'round';
 
-    const actualX = x * rect.width;
-    const actualY = y * rect.height;
+    const actualX = x * canvas.width;
+    const actualY = y * canvas.height;
 
     if (type === 'start') {
       ctx.beginPath();
