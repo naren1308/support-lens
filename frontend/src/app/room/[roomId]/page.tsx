@@ -134,26 +134,40 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
           </div>
         </div>
         
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="relative bg-neutral-900 rounded-xl overflow-hidden border border-neutral-800">
-            <video ref={localVideoRef} autoPlay playsInline muted className="w-full h-full object-cover transform scale-x-[-1]" />
-            <div className="absolute bottom-4 left-4 bg-black/50 px-3 py-1 rounded-lg backdrop-blur-md">You</div>
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Local Video */}
+          <div className="relative bg-neutral-900 rounded-xl overflow-hidden border border-neutral-800 flex items-center justify-center">
+            <video ref={localVideoRef} autoPlay muted playsInline className="w-full h-full object-cover" />
+            
+            {/* If Customer, they see the annotations drawn on THEIR OWN camera feed */}
+            {role === 'customer' && (
+              <canvas 
+                ref={canvasRef}
+                className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none"
+              />
+            )}
+
+            <div className="absolute bottom-4 left-4 bg-black/50 px-3 py-1 rounded-lg backdrop-blur-md z-20">You</div>
           </div>
+
+          {/* Remote Video */}
           <div className="relative bg-neutral-900 rounded-xl overflow-hidden border border-neutral-800 flex items-center justify-center">
             <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover" />
             
-            {/* AR Annotations Canvas Overlay */}
-            <canvas 
-              ref={canvasRef}
-              onMouseDown={startDrawing}
-              onMouseMove={draw}
-              onMouseUp={stopDrawing}
-              onMouseOut={stopDrawing}
-              onTouchStart={startDrawing}
-              onTouchMove={draw}
-              onTouchEnd={stopDrawing}
-              className={`absolute top-0 left-0 w-full h-full z-10 ${role === 'agent' ? 'cursor-crosshair' : 'pointer-events-none'}`}
-            />
+            {/* If Agent, they draw the annotations on the CUSTOMER'S camera feed (which is remote to them) */}
+            {role === 'agent' && (
+              <canvas 
+                ref={canvasRef}
+                onMouseDown={startDrawing}
+                onMouseMove={draw}
+                onMouseUp={stopDrawing}
+                onMouseOut={stopDrawing}
+                onTouchStart={startDrawing}
+                onTouchMove={draw}
+                onTouchEnd={stopDrawing}
+                className="absolute top-0 left-0 w-full h-full z-10 cursor-crosshair"
+              />
+            )}
 
             {!remoteVideoRef.current?.srcObject && <span className="text-neutral-500 absolute z-0">Waiting for other participant...</span>}
             {remoteVideoRef.current?.srcObject && <div className="absolute bottom-4 left-4 bg-black/50 px-3 py-1 rounded-lg backdrop-blur-md z-20">Remote</div>}
